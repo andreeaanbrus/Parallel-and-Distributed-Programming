@@ -27,7 +27,6 @@ std::vector<Account> Bank::getAll() {
 }
 
 void Bank::makeTransaction(Transaction t) {
-//    if (t.getFromId() < t.getToId()) {
         accounts[t.getFromId()].lock();
         if (accounts[t.getFromId()].validTransaction(t)) {
             accounts[t.getFromId()].send(t);
@@ -38,19 +37,6 @@ void Bank::makeTransaction(Transaction t) {
             return;
         }
         accounts[t.getFromId()].unlock();
-//    }
-//    else {
-//        accounts[t.getToId()].lock();
-//        if (accounts[t.getFromId()].validTransaction(t)) { //todo nu e bine aici
-//            accounts[t.getToId()].receive(t);
-//            accounts[t.getToId()].unlock();
-//            accounts[t.getFromId()].lock();
-//            accounts[t.getFromId()].send(t);
-//            accounts[t.getFromId()].unlock();
-//            return;
-//        }
-//        accounts[t.getToId()].unlock();
-//    }
 }
 
 void Bank::Executor() {
@@ -74,7 +60,7 @@ bool Bank::checkConsistency() {
 }
 void Bank::run() {
     const int noOfThreads = 8;
-    for (int bucket = 0; bucket < 1000; ++bucket) {
+    for (int bucket = 0; bucket < 10; ++bucket) {
         for(int i = 0; i < noOfThreads; i++) {
             threads.emplace_back(&Bank::Executor, this);
         }
@@ -82,5 +68,8 @@ void Bank::run() {
             i.join();
         threads.clear();
         std::cout << (checkConsistency() ? "TRUE" : "FALSE") << " " << bucket << '\n';
+//            for ( int i = 0; i < noOfAccounts; i++) {
+//        std::cout << getAll()[i].getBalance() << ' ';
+//    }
     }
 }
