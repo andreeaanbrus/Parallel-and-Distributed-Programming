@@ -19,8 +19,6 @@ public:
     int getM() const {return M;}
     int getData(int i, int j) const {return data[i][j];}
     void setData(int i, int j, long long value) {this->data[i][j] = value;}
-    Matrix sum(Matrix & other);
-    Matrix prod(Matrix & other);
 };
 
 

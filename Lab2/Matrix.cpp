@@ -32,28 +32,3 @@ void Matrix::printMatrix() {
         std::cout << '\n';
     }
 }
-
-Matrix Matrix::sum(Matrix &other) {
-    if (other.getN() != N || other.getM() != M)
-        throw "Incompatible";
-    Matrix result(N, M);
-    for (int i = 0; i < N; i++)
-        for (int j = 0; j < M; j++)
-            result.setData(i, j, this->data[i][j] + other.getData(i, j));
-    return result;
-}
-
-Matrix Matrix::prod(Matrix &other) {
-    if (M != other.getN())
-        throw "Incompatible";
-    Matrix result(getN(), other.getM());
-    for (int i = 0; i < N; ++i)
-        for (int j = 0; j < other.getM(); ++j) {
-            long long acc = 0;
-            for (int k = 0; k < M; ++k)
-                acc += data[i][k] * other.getData(k, j);
-            result.setData(i, j, acc);
-        }
-
-    return result;
-}
