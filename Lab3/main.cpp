@@ -9,7 +9,7 @@ void addLineExecutor(int line, const Matrix& m1, const Matrix& m2, Matrix *res) 
         res->setData(line, j, m1.getData(line, j) + m2.getData(line, j));
 }
 
-void mulLineExcutor(int line, const Matrix& m1, const Matrix& m2, Matrix *res) {
+void mulLineExecutor(int line, const Matrix& m1, const Matrix& m2, Matrix *res) {
     for(int j = 0; j < m2.getM(); j++) {
         int acc = 0;
         for (int k = 0; k < m1.getM(); k++)
@@ -32,14 +32,14 @@ void multiplicationAsync(const Matrix& m1, const Matrix& m2, Matrix &res) {
     std::vector<std::future<void>> f;
     f.reserve(m1.getN());
     for(int i = 0; i < m1.getN(); i++)
-        f.push_back(std::async(mulLineExcutor, i, m1, m2, &res));
+        f.push_back(std::async(mulLineExecutor, i, m1, m2, &res));
     for(auto & future : f)
         future.wait();
 }
 
 
 void addThreadPool(const Matrix& m1, const Matrix &m2, Matrix &res) {
-    ThreadPool tp(12);
+    ThreadPool tp(8);
     std::vector<std::future<void>> f;
     f.reserve(m1.getN());
     for (int i = 0; i < m1.getN(); i++)
@@ -49,11 +49,11 @@ void addThreadPool(const Matrix& m1, const Matrix &m2, Matrix &res) {
 }
 
 void multiplicationThreadPool(const Matrix&m1, const Matrix &m2, Matrix &res) {
-    ThreadPool tp(12);
+    ThreadPool tp(8);
     std::vector<std::future<void>> f;
     f.reserve(m1.getN());
     for (int i = 0; i < m1.getN(); i++)
-        f.push_back(tp.enqueue(mulLineExcutor, i, m1, m2, &res));
+        f.push_back(tp.enqueue(mulLineExecutor, i, m1, m2, &res));
     for(auto & future : f)
         future.wait();
 }
@@ -78,6 +78,8 @@ int main() {
     Matrix m2("matrix2.txt");
     Matrix syncRes (m1.getN(), m1.getM());
     syncAdd(m1, m2, syncRes);
+
+
     std::cout <<  "-------------ASYNC---------" << std::endl;
     Matrix resAddAsync (m1.getN(), m1.getM());
     auto startAddAsync = std::chrono::high_resolution_clock::now();
