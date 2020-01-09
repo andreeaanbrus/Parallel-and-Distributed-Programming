@@ -1,13 +1,13 @@
-#Gaussian Blur
+# Gaussian Blur
 
-###Run the program
+### Run the program
 Parallel: compile + run   
 Distributed: ``` cd cmake-build-debug/ && time mpiexec -n 8 ./GaussianBlur distributed ```
-###Input conditions:
+### Input conditions:
 Kenrel: 5
 No of threads: 8 
 
-###Results
+### Results   
 | Image Size  | Linear | Threads | MPI | 
 | ------------- | ------------- | ------------- | ------------- |
 | Content Cell  | Content Cell  |
