@@ -1,34 +1,49 @@
 #include <iostream>
-#include <cmath>
 #include <vector>
 #include <tuple>
 #include <chrono>
+#include <cstring>
 #include "GaussianBlur.hpp"
 
 
 void gaussianBlur(Picture &img, int kernelRadius);
 
-int main() {
-//    Picture p1("galeata.jpg");
-//    std::cout << "The linear algorithm\n";
-//    auto startLinear = std::chrono::high_resolution_clock::now();
-//    gaussianBlur(p1, 10);
-//    auto finishLinear = std::chrono::high_resolution_clock::now();
-//    std::chrono::duration<double> timeLinear = finishLinear- startLinear;
-//    std::cout << timeLinear.count() << '\n';
-//    p1.write("out2.jpg");
+int main(int argc, char** argv) {
+    int kernelRadius = 5;
+    std::string filename = "galeata.jpg";
+    Picture p1(filename);
+    if (argc == 1) {
+        std::cout << "The linear algorithm\n";
+        auto startLinear = std::chrono::high_resolution_clock::now();
+        gaussianBlur(p1, kernelRadius);
+        auto finishLinear = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> timeLinear = finishLinear- startLinear;
+        std::cout << timeLinear.count() << '\n';
+        p1.write("linear.jpg");
 
-    std::cout << "The parallel algorithm\n";
+        std::cout << "The parallel algorithm\n";
 
-    auto startParallel = std::chrono::high_resolution_clock::now();
-    Picture p2("galeata.jpg");
-    GaussianBlurThreads(p2, 100);
+        auto startParallel = std::chrono::high_resolution_clock::now();
+        Picture p2(filename);
+        GaussianBlurThreads(p2, kernelRadius);
+        auto finishParallel = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> timeParallel = finishParallel- startParallel;
+        std::cout << timeParallel.count() << '\n';
+        p2.write("parallel.jpg");
+    }
 
-    auto finishParallel = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> timeParallel = finishParallel- startParallel;
-    std::cout << timeParallel.count() << '\n';
-//    std::cout << timeLinear.count() << '\n';
-    p2.write("out3.jpg");
+    if (argc > 1){
+        if (strcmp(argv[1], "distributed") == 0 ) {
+            std::cout << "The distributed algorithm\n";
+            Picture p3(filename);
+            auto startDistributed = std::chrono::high_resolution_clock::now();
+            GaussianBlurDistributed(p3, kernelRadius);
+            auto finishtDistributed = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> distributedTime = finishtDistributed- startDistributed;
+            std::cout << distributedTime.count() << '\n';
+        }
+    }
+    return 0;
 }
 
 void gaussianBlur(Picture &img, int kernelRadius) {
@@ -39,8 +54,6 @@ void gaussianBlur(Picture &img, int kernelRadius) {
                                                                                                 std::vector<std::tuple<unsigned char, unsigned char, unsigned char>>(
                                                                                                         img.getWidth(),
                                                                                                         {0, 0, 0}));
-
-    // we have the kernel function
     for (int i = 0; i < img.getHeight(); ++i) {
         for (int j = 0; j < img.getWidth(); ++j) {
             double new_red = 0;
@@ -62,11 +75,9 @@ void gaussianBlur(Picture &img, int kernelRadius) {
                             ((img(aux_i, aux_j).getBlue())) * GaussianKernel[x + kernelRadius][y + kernelRadius];
                 }
             }
-
             auto red_uc = static_cast<unsigned char>(new_red);
             auto green_uc = static_cast<unsigned char>(new_green);
             auto blue_uc = static_cast<unsigned char>(new_blue);
-
 
             std::get<0>(newMatrix[i][j]) = red_uc;
             std::get<1>(newMatrix[i][j]) = green_uc;
@@ -78,5 +89,4 @@ void gaussianBlur(Picture &img, int kernelRadius) {
             img(i, j).setColors(std::get<0>(newMatrix[i][j]), std::get<1>(newMatrix[i][j]),
                                 std::get<2>(newMatrix[i][j]));
     }
-
 }

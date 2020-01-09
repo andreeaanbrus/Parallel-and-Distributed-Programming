@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 project(GaussianBlur)
+find_package(MPI REQUIRED)
 
 set (CMAKE_CXX_FLAGS "-lpng")
 set(CMAKE_CXX_FLAGS -pthread)
 set(CMAKE_CXX_STANDARD 14)
-
+include_directories(~/usr/include/mpi)
 add_executable(GaussianBlur main.cpp Picture.hpp lib/jpglib.hpp lib/stb_image.h lib/stb_image_write.h GaussianBlur.hpp lib/threadPool.hpp)
+target_link_libraries(GaussianBlur ${MPI_LIBRARIES})
